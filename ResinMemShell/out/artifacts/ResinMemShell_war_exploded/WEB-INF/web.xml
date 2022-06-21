@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+
+    <filter>
+        <filter-name>TestFilter</filter-name>
+        <filter-class>com.axisx.MyFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>TestFilter</filter-name>
+        <url-pattern>/filter</url-pattern>
+    </filter-mapping>
+
+
+    <filter>
+        <filter-name>MemShellCheck</filter-name>
+        <filter-class>com.axisx.MemShellCheck</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>MemShellCheck</filter-name>
+        <url-pattern>/check</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>InjectListenerByServlet</servlet-name>
+        <servlet-class>com.axisx.InjectListenerByServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InjectListenerByServlet</servlet-name>
+        <url-pattern>/inl</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>InjectServletByServlet</servlet-name>
+        <servlet-class>com.axisx.InjectServletByServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InjectServletByServlet</servlet-name>
+        <url-pattern>/ins</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>InjectFilterByServlet</servlet-name>
+        <servlet-class>com.axisx.InjectFilterByServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InjectFilterByServlet</servlet-name>
+        <url-pattern>/inf</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>TestServlet</servlet-name>
+        <servlet-class>com.axisx.MyServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestServlet</servlet-name>
+        <url-pattern>/servlet</url-pattern>
+    </servlet-mapping>
+
+    <listener>
+        <listener-class>com.axisx.MyListener</listener-class>
+    </listener>
+</web-app>
