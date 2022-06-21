@@ -8,9 +8,12 @@ MemShell: Listener、Filter、Servlet、Agent
 
 Version:
 Tomcat: 8.0.56
+Weblogic: 12.2.1.3.0
+Resin: 4.0.65
 Jetty: 9.4.44.v20210927
 JBoss: 6.1.0.Final
-Weblogic: 12.2.1.3.0
+Glassfish: 4.1.11
+TongWeb: 6.1
 ```
 
 ## (1) Tomcat
@@ -35,29 +38,15 @@ org.apache.catalina.core.StandardContext
   ——children
     ——"MyServlet"->{StandardWrapper@3903}"StandardEngine[Catalina].StandardHost[localhost].StandardContext[/xxx]"
 ```
-Method to add or remove MemShell
+Differences between versions
 ```
 // Filter
-removeFilterDef、removeFilterMap
 // Tomcat 8
 org.apache.tomcat.util.descriptor.web.FilterMap
 org.apache.tomcat.util.descriptor.web.FilterDef
 // Tomcat 7
 org.apache.catalina.deploy.FilterMap
 org.apache.catalina.deploy.FilterDef
-
-// Servlet
-removeServletMapping、removeChild
-
-// Listener
-List<Object> applicationEventlisteners=(List<Object>)getFV(context,"applicationEventListenersList");
-
-for(Object lis:applicationEventlisteners){
-    String clsName=lis.getClass().getName();
-    if (clsName.equals(className)){
-        applicationEventlisteners.remove(lis);
-    }
-}
 ```
 
 ## (2) Weblogic
@@ -112,7 +101,7 @@ WebAppServletContext
 ## (3) Resin
 The code structure
 ```
-_webApp
+com.caucho.server.webapp.WebApp
   (Listener)
   ——_listeners
     ——0
@@ -145,6 +134,34 @@ _webApp
         ——value={HashSet@5800}
           ——0="/test"
 ```
+Differences between versions
+```
+// filter
+// Resin 4
+_webApp.getClass().getDeclaredMethod("addFilter",FilterConfigImpl.class)
+_webApp.getClass().getDeclaredField("_filterMapper")
+_webApp.getClass().getDeclaredField("_loginFilterMapper")
+
+// Resin 3
+_webApp.getClass().getSuperClass().getDeclaredMethod("addFilter",FilterConfigImpl.class)
+_webApp.getClass().getSuperClass().getDeclaredField("_loginFilterMapper")
+
+//Listener
+// Resin 4
+com.caucho.server.webapp.ListenerConfig
+_webApp.getClass().getDeclaredMethod("addListener",ListenerConfig.class)
+
+// Resin 3
+com.caucho.server.webapp.Listener
+_webApp.getClass().getSuperClass().getDeclaredMethod("addListener",Listener.class)
+```
+The way to get Context
+```
+java.lang.ThreadLocal$ThreadLocalMap$Entry ->
+  org.eclipse.jetty.webapp.WebAppContext$Context ->
+    WebAppContext
+```
+
 
 ## (4) Jetty
 The code structure
@@ -184,16 +201,11 @@ org.eclipse.jetty.webapp.WebAppContext
         ——_servletname="MyServlet"
         ——_pathSpecs={String[1]@3995}["/servlet"]
 ```
-Method to add or remove MemShell
+The way to get Context
 ```
-// Filter
-addFilterWithMapping(ServletHandler)
-
-// Servlet
-addServletWithMapping(ServletHandler)
-
-// Listener
-addEventListener(ContextHandler)
+java.lang.ThreadLocal$ThreadLocalMap$Entry ->
+  org.eclipse.jetty.webapp.WebAppContext$Context ->
+    WebAppContext
 ```
 
 ## (5) JBoss
@@ -222,16 +234,118 @@ org.apache.catalina.core.StandardContext
     ——"MyServlet"->{StandardWrapper@3903}"StandardEngine[Catalina].StandardHost[localhost].StandardContext[/xxx]"
 ```
 
-Method to add or remove MemShell
+Differences between versions
 ```
 // Filter
-FilterDef(setFilterName、setFilterClass)
-FilterMap(addURLPattern in JBoss 6; setURLPattern in JBoss 4)、setFilterName))
-StandardContext(addFilterDef、addFilterMap、filterConfigs)
-
-// Listener
-setApplicationEventListeners
+FilterMap: addURLPattern in JBoss 6; setURLPattern in JBoss 4
 ```
+The way to get Context
+```
+ThreadGroup.threads ->
+  http-8088-Acceptor-0 ->
+    JioEndpoint$Acceptor ->
+      JioEndpoint ->
+        Http11NioProtocol$Http11ConnectionHandler ->
+          RequestGroupInfo ->
+            Request ->
+              StandardContext
+```
+
+## (6) Glassfish
+The code structure（Similar to Tomcat）
+```
+com.sun.enterprise.web.WebModule(.Superclass.Superclass-> org.apache.catalina.core.StandardContext)
+  (Listener)
+  ——eventListeners(ArrayList@8376)
+    ——0={MyListener@7079}
+  (Filter)
+  ——filterConfigs("MyFilter"->{ApplicationFilterConfig@3869}"ApplicationFilterConfig[name=MyFilter,filterClass=com.test.MyFilter]")
+    ——"MyFilter"
+      ——key="MyFilter"
+      ——value
+        ——filterDef->{FilterDef@3883}"FilterDef[filterName=MyFilter,filiterClass=com.test.MyFilter]"
+        ——filter={MyFilter@12685}
+  ——filterDefs("MyFilter"->{FilterDef@3877}"FilterDef[filterName=Myfilter,filterClass=com.test.MyFilter]")
+  ——filterMaps
+    ——0={FilterMap@12703}"FilterMap[filterName=MyFilter,urlPattern=/filter]"
+      ——filterName="MyFilter"
+      ——urlPattern="/filter"
+  (Servlet)
+  ——servletMappings
+    ——"/my"->"MyServlet"
+  ——children
+    ——"MyServlet"->{StandardWrapper@3903}"StandardEngine[Catalina].StandardHost[localhost].StandardContext[/xxx]"
+  ——servletRegisMap={ConcurrentHashMap@7141}
+    ——"MyServlet"->{WebServletRegistrationImpl@7222}
+```
+The way to get Context
+```
+ThreadGroup.threads ->
+  Thread[ContainerBackgroundProcessor] ->
+    ContainerBase$ContainerBackgroundProcessor ->
+      WebModule
+```
+
+## (7) TongWeb
+The code structure（Similar to Tomcat）
+```
+com.tongweb.web.thor.core.ThorStandardContext(.Superclass-> com.tongweb.web.thor.core.StandardContext)
+  (Listener)
+  ——applicationListeners
+  (Filter)
+  ——filterConfigs={HaashMap@11475}
+    ——table
+      ——0
+        ——key="MyFilter"
+        ——value={ApplicationFilterConfig@11543}
+          ——filter={MyFilter@12685}
+          ——filterDef->{FilterDef@3883}"FilterDef[filterName=MyFilter,filiterClass=com.test.MyFilter]"
+            ——filterClass="com.test.MyFilter"
+            ——filterName="MyFilter"
+  ——filterDefs={HaashMap@11476}
+    ——table
+      ——0
+       ——key="MyFilter"
+       ——value={FilterDef@11547}
+        ——filterClass="com.test.MyFilter"
+        ——filterName="MyFilter"
+  ——filterMaps
+    ——array={FilterMap[2]@11558}
+      ——0={FilterMap@11559}"FilterMap[filterName=MyFilter,urlPattern=/filter]"
+        ——filterName="MyFilter"
+        ——urlPatterns={String[1]@11563}
+          ——0="/filter"
+  (Servlet)
+  ——servletMappings(HashMap@11490)
+    ——table={HashMap$Entry[16]@11566}
+      ——0={HashMap$Entry@11568}
+        ——key="/servlet"
+        ——value="MyServlet"
+  ——children(HashMap@11510)
+    ——table
+      ——0={HashMap$Entry@11583}
+        ——key="MyServlet"
+        ——value={ThorStandardWrapper@11452}
+          ——instance={MyFilter@11368}
+          ——servletClass="com.test.MyFilter"
+          ——mappings={ArrayList@11592}
+            ——elementData={Object[2]@11610}
+              ——0="/servlet"
+          ——name="MyFilter"
+```
+The way to get Context
+```
+ThreadGroup.threads ->
+  http-nio-8088-Acceptor-0 ->
+    NioEndpoint$Acceptor ->
+      NioEndpoint ->
+        ThorHttp11NioProtocol$ThorHttpConnectionHandler ->
+          RequestGroupInfo ->
+            ThorRequest ->
+              ThorStandardContext
+```
+
+
 
 ## Some features of MemShell
 (1) The listener/filter/servlet is not configured in web.xml  
