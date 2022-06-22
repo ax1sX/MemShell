@@ -112,6 +112,32 @@ WebAppServletContext
           ——name="com.test.MyListener"
           ——classLoader
 ```
+The way to get Context
+```
+ThreadGroup.threads ->
+  ExecuteThread.workEntry ->
+    ContainerSupportProviderImpl$WlsRequestExecutor ->
+      HttpConnectionHandler ->
+        ServletRequestImpl ->
+          WebAppServletContext
+
+
+Thread(weblogic.timers.internal.TimerThread) ->
+  TimerManagerImpl ->
+    ServerTimeImpl ->
+      AsyncContextTimer ->
+        WebAppServletContext
+        
+some threads:
+weblogic.server.channels.ServerListenThread
+weblogic.work.ExecuteThread
+weblogic.kernel.ServerExecuteThread
+weblogic.timers.internal.TimerThread$Thread
+com.oracle.common.internal.util.TimerThread
+com.octetstring.vde.DoSManager
+com.octetstring.vde.backend.standard.TransactionProcessor
+...
+```
 
 ## (3) Resin
 The code structure
@@ -172,9 +198,9 @@ _webApp.getClass().getSuperClass().getDeclaredMethod("addListener",Listener.clas
 ```
 The way to get Context
 ```
-java.lang.ThreadLocal$ThreadLocalMap$Entry ->
-  org.eclipse.jetty.webapp.WebAppContext$Context ->
-    WebAppContext
+com.caucho.server.dispatch.ServletInvocation ->
+  HttpServletRequestImpl ->
+    WebApp
 ```
 
 
