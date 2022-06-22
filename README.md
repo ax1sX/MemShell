@@ -7,7 +7,7 @@ Framework: Spring
 MemShell: Listener、Filter、Servlet、Agent
 
 Version:
-Tomcat: 8.0.56
+Tomcat: 8.5.61
 Weblogic: 12.2.1.3.0
 Resin: 4.0.65
 Jetty: 9.4.44.v20210927
@@ -47,6 +47,21 @@ org.apache.tomcat.util.descriptor.web.FilterDef
 // Tomcat 7
 org.apache.catalina.deploy.FilterMap
 org.apache.catalina.deploy.FilterDef
+```
+The way to get Context
+```
+ThreadGroup.threads ->
+  http-nio-8088-Acceptor-0 ->
+    NioEndpoint$Acceptor ->
+      NioEndpoint ->
+        AbstractProtocol$ConnectionHandler ->
+          Http11NioProtocol ->
+            CoyoteAdapter ->
+              Connector ->
+                StandardService ->
+                  StandardEngine ->
+                    StandardHost ->
+                      StandardContext
 ```
 
 ## (2) Weblogic
