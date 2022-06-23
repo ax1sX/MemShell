@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4"
+         xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http:/java.sun.com/dtd/web-app_2_3.dtd">
+
+<!--    <servlet>-->
+<!--        <servlet-name>MyServlet</servlet-name>-->
+<!--        <servlet-class>com.axisx.MyServlet</servlet-class>-->
+<!--    </servlet>-->
+
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>MyServlet</servlet-name>-->
+<!--        <url-pattern>/servlet</url-pattern>-->
+<!--    </servlet-mapping>-->
+
+    <servlet>
+        <servlet-name>InjectListener</servlet-name>
+        <servlet-class>com.axisx.InjectListenerByServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>InjectListener</servlet-name>
+        <url-pattern>/inl</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>InjectFilter</servlet-name>
+        <servlet-class>com.axisx.InjectFilterByServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>InjectFilter</servlet-name>
+        <url-pattern>/inf</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>InjectServlet</servlet-name>
+        <servlet-class>com.axisx.InjectServletByServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>InjectServlet</servlet-name>
+        <url-pattern>/ins</url-pattern>
+    </servlet-mapping>
+
+
+    <filter>
+        <filter-name>MemShellCheck</filter-name>
+        <filter-class>com.axisx.MemShellCheck</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>MemShellCheck</filter-name>
+        <url-pattern>/check</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>MyFilter</filter-name>
+        <filter-class>com.axisx.MyFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>MyFilter</filter-name>
+        <url-pattern>/filter</url-pattern>
+    </filter-mapping>
+
+    <listener>
+        <listener-class>com.axisx.MyListener</listener-class>
+    </listener>
+</web-app>
