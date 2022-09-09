@@ -1,5 +1,7 @@
 # MemShell
 
+**Each folder is a project for the middleware to test Memory Shell(including Listener, Filter and Servlet Shell)**
+
 A List of Memory Shell related component relationships for some middleware
 ```
 Middleware: Tomcat、Weblogic、Jetty、JBoss、Glassfish、Resin、TongWeb
