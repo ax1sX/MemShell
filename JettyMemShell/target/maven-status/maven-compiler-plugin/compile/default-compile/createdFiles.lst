@@ -1,8 +1,0 @@
-test/InjectServletByServlet.class
-test/MemShellCheck.class
-test/MemShellCheck$CheckStruct.class
-test/InjectFilterByServlet.class
-test/InjectListenerByServlet.class
-test/MyFilter.class
-test/MyServlet.class
-test/MyListener.class
